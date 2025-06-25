@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { User } from "../model/user";
-import { Tweet } from "../model/tweet";
+
+import { Tweet } from "../model/tweet.js";
 
 const createTweet = async (req,res) => {
     const {content} = req.body;
@@ -40,7 +40,7 @@ const updateTweet = async (req,res) => {
         })
     }
 
-    const tweet = Tweet.findById(tweetId);
+    const tweet = await Tweet.findById(tweetId);
     if(!tweet){
         res.status(401).json({
             message: "Tweet not found"
@@ -67,7 +67,7 @@ const updateTweet = async (req,res) => {
             message: "Failed to edit tweet, please try again"
         })
     }
-    res.status(200).json(
+    return res.status(200).json(
         {
             message: "Tweet updated successfully",
             newTweet
@@ -83,25 +83,58 @@ const deleteTweet = async (req,res) => {
             message: "Invalid TweetId"
         })
     }
-    const tweet = Tweet.findById(tweetId);
+    const tweet = await Tweet.findById(tweetId);
     if(!tweet){
         res.status(401).json({
             message: "Tweet not found"
         })
     }
 
-    if(tweet.owner.toString() !== req.user._id.toString()){
-        res.status(401).json({
-            message: "You are not the owner of this tweet"
-        })
+    if (!tweet || !tweet.owner || !req.user || !req.user._id) {
+        return res.status(400).json({ message: "Invalid data for authorization check." });
+    }
+
+    if (tweet.owner.toString() !== req.user._id.toString()) {
+    return res.status(403).json({ message: "Unauthorized: You can't delete this tweet." });
     }
     await Tweet.findByIdAndDelete(tweetId);
 
-    res.status(200).json({
+    return res.status(200).json({
         message:"Tweet Deleted Successfully",
         tweetId
     });
     
 }
 
-export {createTweet,deleteTweet,updateTweet}
+const getUserTweet = async (req,res) => {
+    const userId = req.user._id;
+
+    if(!mongoose.isValidObjectId(userId)){
+        res.status(400).json({
+            message: "Invalid TweetId"
+        })
+    }
+
+    const tweet = await Tweet.find({
+        owner:userId
+    }).sort({createdAt : -1});
+
+    res.status(200).json({
+        tweet,
+        message: "User Tweet Fetched Successfully"
+    });
+}
+
+const getAllTweet = async (req,res) => {
+    const tweet = await Tweet.find().populate("owner","username name").sort({createdAt: -1}).lean();
+    if(!tweet){
+        res.json(401).json({
+            message : "No tweet created yet.",
+        })
+    }
+    res.status(200).json({
+        message: "All Tweet Fetched Successfully",
+        tweet
+    });
+}
+export {createTweet,deleteTweet,updateTweet,getUserTweet,getAllTweet}

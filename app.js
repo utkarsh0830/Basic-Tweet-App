@@ -6,8 +6,10 @@ const app = express();
 import connectDB from "./db/index.js";
 import userRoutes from "./routes/user.route.js";
 import cookieParser from 'cookie-parser';
+import tweetRoutes from './routes/tweet.route.js';
+import likesRoutes from './routes/likes.route.js';
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5100;
 
 // app.get('/', (req, res) => {
 //     res.json({ 1: "Service Started Successfully" });
@@ -32,7 +34,10 @@ app.get("/", (req, res) => {
 });
 
 
-app.use("/api/v1/",userRoutes);
+app.use("/api/v1",userRoutes);
+app.use("/api/v1/tweets", tweetRoutes);
+app.use('/api/v1/likes',likesRoutes)
+
 
 
 connectDB()

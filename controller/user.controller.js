@@ -109,4 +109,47 @@ const getCurrentUser = (req,res) => {
   )
 }
 
-export { loginUser, registerUser,getCurrentUser};
+const getAllUsers = async (req,res) => {
+  try {
+    const users = await User.find().select("-password -refreshToken").lean();
+    return res.status(200).json({
+      message: "All users Fetched Successfully",
+      users
+    });
+
+    } catch (error) {
+      res.status(401).json({
+        message: "Error fetching users"
+      });
+    }
+}
+
+const logOut = async (req,res) => {
+  try {
+    
+    const userId = req.user._id;
+    await User.findByIdAndUpdate(userId,{
+      $unset: {
+        refreshToken: 1
+      }
+    },{new: true});
+
+    const options = {
+      httpOnly:true
+    }
+    
+    return res.status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json({
+      message: "User logged out successfully"
+    });
+
+  } catch (error) {
+    return res.status(400).json({
+      message : "Failed to logout"
+    })
+  }
+}
+
+export { loginUser, registerUser,getCurrentUser,getAllUsers,logOut};

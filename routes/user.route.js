@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { getCurrentUser, loginUser,registerUser } from "../controller/user.controller.js";
+import { getAllUsers, getCurrentUser, loginUser,logOut,registerUser } from "../controller/user.controller.js";
 import verifyJWT from "../middlewares/auth.js"
 const router = new Router();
 
@@ -14,7 +14,9 @@ router.get('/test-protected', verifyJWT, (req, res) => {
     });
 });
 
-router.get('/getCurrentUser',verifyJWT,getCurrentUser)
+router.post('/logOut',verifyJWT,logOut);
+router.get('/getCurrentUser',verifyJWT,getCurrentUser);
+router.get("/getAllUsers",getAllUsers);
 
 
 export default router;

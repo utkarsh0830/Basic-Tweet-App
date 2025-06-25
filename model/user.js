@@ -44,7 +44,7 @@ userSchema.pre(
 
     userSchema.methods.generateAccessToken = function(){
         return jwt.sign({
-            _id: this.id,
+            _id: this._id,
             email: this.email,
             username: this.username,
             fullName: this.fullName
@@ -57,7 +57,7 @@ userSchema.pre(
     }
     userSchema.methods.generateRefreshToken = function(){
         return jwt.sign({
-            _id: this.id,
+            _id: this._id,
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
