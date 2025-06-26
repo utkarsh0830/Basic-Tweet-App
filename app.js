@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 import tweetRoutes from './routes/tweet.route.js';
 import likesRoutes from './routes/likes.route.js';
 
-const PORT = process.env.PORT || 5100;
+const PORT = 4900;
 
 // app.get('/', (req, res) => {
 //     res.json({ 1: "Service Started Successfully" });
