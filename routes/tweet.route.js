@@ -8,6 +8,6 @@ router.post("/",verifyJWT, createTweet);
 router.post('/updateTweet/:tweetId',verifyJWT,updateTweet);
 router.post("/deleteTweet/:tweetId",verifyJWT,deleteTweet);
 router.get('/getUserTweet',verifyJWT,getUserTweet);
-router.get("/getAllTweet",getAllTweet);
+router.get("/getAllTweet",verifyJWT,getAllTweet);
 
 export default router;
